@@ -29,6 +29,18 @@ inputs:
     description: 'Just fix files (`clang-format -i`) instead of returning a diff'
     required: false
     default: False
+  commitMessage:
+    description: 'Commit message when applying clang-format changes directly'
+    required: false
+    default: "Run clang-format"
+  authorName:
+    description: 'Author name for automated clang-format commits'
+    required: false
+    default: "Clang-format bot"
+  authorEmail:
+    description: 'Author email for automated clang-format commits'
+    required: false
+    default: "clang-robot@example.com"
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -40,6 +52,12 @@ runs:
     - ${{ inputs.style }}
     - --inplace
     - ${{ inputs.inplace }}
+    - --commit-message
+    - ${{ inputs.commitMessage }}
+    - --author-name
+    - ${{ inputs.authorName }}
+    - --author-email
+    - ${{ inputs.authorEmail }}
     - --extensions
     - ${{ inputs.extensions }}
     - --exclude

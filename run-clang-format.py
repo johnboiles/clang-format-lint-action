@@ -13,11 +13,13 @@ from __future__ import print_function, unicode_literals
 import argparse
 import codecs
 import difflib
+import errno
 import fnmatch
 import io
-import errno
+import json
 import multiprocessing
 import os
+import re
 import signal
 import subprocess
 import sys
@@ -40,6 +42,7 @@ class ExitStatus:
     DIFF = 1
     TROUBLE = 2
 
+
 def excludes_from_file(ignore_file):
     excludes = []
     try:
@@ -56,7 +59,8 @@ def excludes_from_file(ignore_file):
     except EnvironmentError as e:
         if e.errno != errno.ENOENT:
             raise
-    return excludes;
+    return excludes
+
 
 def list_files(files, recursive=False, extensions=None, exclude=None):
     if extensions is None:
@@ -247,6 +251,33 @@ def split_list_arg(arg):
     """
     return arg[0].split() if len(arg) == 1 else arg
 
+
+def get_git_branch():
+    github_ref = os.environ.get('GITHUB_REF')
+    return re.sub('.*refs/heads/', '', github_ref)
+
+
+def prepare_repo_for_committing(arg):
+    event_path = json.loads(os.environ.get('GITHUB_EVENT_PATH'))
+    repo_fullname = event_path['reposiory']['full_name']
+    token = os.environ.get()
+    subprocess.Popen(['git', 'remote', 'add', 'origin' f'https://x-access-token:{token}@github.com/{repo_fullname}.git'])
+    subprocess.Popen(['git', 'init'])
+    branch = get_git_branch()
+    subprocess.Popen(['git', 'fetch', branch])
+    subprocess.Popen(['git', 'checkout', branch])
+    subprocess.Popen(['git', 'config', '--global', 'user.email', args.author_email])
+    subprocess.Popen(['git', 'config', '--global', 'user.name', args.author_name])
+    subprocess.Popen(['git', 'fetch', branch])
+    subprocess.Popen(['git', 'update-index', '--assume-unchanged', '.github/workflows/*'])
+
+
+def commit_to_repo(arg):
+    branch = get_git_branch()
+    subprocess.Popen(['git', 'commit', '-a', '-m', args.commit_message])
+    subprocess.Popen(['git', 'push', '-u', 'origin', branch])
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -300,6 +331,18 @@ def main():
         type=bool,
         default=False,
         help='Just fix files (`clang-format -i`) instead of returning a diff')
+    parser.add_argument(
+        '--commit-message',
+        default='Run clang-format',
+        help='Commit message when applying clang-format changes directly')
+    parser.add_argument(
+        '--author-name',
+        default='Clang-format bot',
+        help='Author name for automated clang-format commits')
+    parser.add_argument(
+        '--author-email',
+        default='clang-robot@example.com',
+        help='Author email for automated clang-format commits')
 
     args = parser.parse_args()
 
@@ -357,6 +400,9 @@ def main():
     if not args.quiet:
       print('Processing %s files: %s' % (len(files), ', '.join(files)))
 
+    if args.inplace:
+        prepare_repo_for_committing(args)
+
     njobs = args.j
     if njobs == 0:
         njobs = multiprocessing.cpu_count() + 1
@@ -394,10 +440,14 @@ def main():
             sys.stderr.writelines(errs)
             if outs == []:
                 continue
-            if not args.quiet and not args.inplace:
+            if not args.quiet:
                 print_diff(outs, use_color=colored_stdout)
             if retcode == ExitStatus.SUCCESS:
                 retcode = ExitStatus.DIFF
+
+    if args.inplace:
+        commit_to_repo(args)
+
     return retcode
 
 
