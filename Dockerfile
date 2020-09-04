@@ -1,7 +1,7 @@
 FROM python:3-alpine
 
 RUN apk update \
- && apk add jq git \
+ && apk add git \
  && rm -rf /var/cache/apk/*
 
 COPY run-clang-format.py /run-clang-format.py

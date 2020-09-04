@@ -263,7 +263,7 @@ def prepare_repo_for_committing(args):
         event_json = json.load(event_file)
     print("JSON+" + os.environ.get('GITHUB_EVENT_PATH') + str(event_json))
     repo_fullname = event_json['repository']['full_name']
-    token = os.environ.get()
+    token = os.environ.get('GITHUB_TOKEN')
     subprocess.Popen(['git', 'remote', 'add', 'origin' f'https://x-access-token:{token}@github.com/{repo_fullname}.git'])
     subprocess.Popen(['git', 'init'])
     branch = get_git_branch()
