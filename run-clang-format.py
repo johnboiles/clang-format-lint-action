@@ -447,10 +447,11 @@ def main():
             sys.stderr.writelines(errs)
             if outs == []:
                 continue
-            if not args.quiet and not args.inplace:
-                print_diff(outs, use_color=colored_stdout)
-            if retcode == ExitStatus.SUCCESS:
-                retcode = ExitStatus.DIFF
+            if not args.inplace:
+                if not args.quiet:
+                    print_diff(outs, use_color=colored_stdout)
+                if retcode == ExitStatus.SUCCESS:
+                    retcode = ExitStatus.DIFF
 
     if args.inplace:
         commit_to_repo(args)
