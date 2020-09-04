@@ -269,7 +269,8 @@ def prepare_repo_for_committing(args):
     subprocess.Popen(['git', 'remote', 'add', 'origin', repo_url])
     subprocess.Popen(['git', 'init'])
     branch = get_git_branch()
-    subprocess.Popen(['git', 'fetch', branch])
+    print(f'BRANCH {branch}')
+    subprocess.Popen(['git', 'fetch', 'origin', origin])
     subprocess.Popen(['git', 'checkout', branch])
     subprocess.Popen(['git', 'config', '--global', 'user.email', args.author_email])
     subprocess.Popen(['git', 'config', '--global', 'user.name', args.author_name])
@@ -445,7 +446,7 @@ def main():
             sys.stderr.writelines(errs)
             if outs == []:
                 continue
-            if not args.quiet:
+            if not args.quiet and not args.inplace:
                 print_diff(outs, use_color=colored_stdout)
             if retcode == ExitStatus.SUCCESS:
                 retcode = ExitStatus.DIFF
