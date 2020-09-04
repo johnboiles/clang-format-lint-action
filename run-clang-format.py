@@ -258,30 +258,31 @@ def get_git_branch():
 
 
 def prepare_repo_for_committing(args):
-
-    with open(os.environ.get('GITHUB_EVENT_PATH')) as event_file:
-        event_json = json.load(event_file)
-    print("JSON+" + os.environ.get('GITHUB_EVENT_PATH') + str(event_json))
-    repo_fullname = event_json['repository']['full_name']
-    token = os.environ.get('GITHUB_TOKEN')
-    repo_url = f'https://x-access-token:{token}@github.com/{repo_fullname}.git'
-    print(f"REPO URL {repo_url}")
-    subprocess.Popen(['git', 'remote', 'add', 'origin', repo_url])
-    subprocess.Popen(['git', 'init'])
-    branch = get_git_branch()
-    print(f'BRANCH {branch}')
-    subprocess.Popen(['git', 'fetch', 'origin', branch])
-    subprocess.Popen(['git', 'checkout', branch])
-    subprocess.Popen(['git', 'config', '--global', 'user.email', args.author_email])
-    subprocess.Popen(['git', 'config', '--global', 'user.name', args.author_name])
-    subprocess.Popen(['git', 'fetch', 'origin', branch])
-    subprocess.Popen(['git', 'update-index', '--assume-unchanged', '.github/workflows/*'])
+    pass
+    # with open(os.environ.get('GITHUB_EVENT_PATH')) as event_file:
+    #     event_json = json.load(event_file)
+    # print("JSON+" + os.environ.get('GITHUB_EVENT_PATH') + str(event_json))
+    # repo_fullname = event_json['repository']['full_name']
+    # token = os.environ.get('GITHUB_TOKEN')
+    # repo_url = f'https://x-access-token:{token}@github.com/{repo_fullname}.git'
+    # print(f"REPO URL {repo_url}")
+    # subprocess.Popen(['git', 'remote', 'add', 'origin', repo_url])
+    # subprocess.Popen(['git', 'init'])
+    # branch = get_git_branch()
+    # print(f'BRANCH {branch}')
+    # subprocess.Popen(['git', 'fetch', 'origin', branch])
+    # subprocess.Popen(['git', 'checkout', branch])
+    # subprocess.Popen(['git', 'config', '--global', 'user.email', args.author_email])
+    # subprocess.Popen(['git', 'config', '--global', 'user.name', args.author_name])
+    # subprocess.Popen(['git', 'fetch', 'origin', branch])
+    # subprocess.Popen(['git', 'update-index', '--assume-unchanged', '.github/workflows/*'])
 
 
 def commit_to_repo(args):
-    branch = get_git_branch()
-    subprocess.Popen(['git', 'commit', '-a', '-m', args.commit_message])
-    subprocess.Popen(['git', 'push', '-u', 'origin', branch])
+    pass
+    # branch = get_git_branch()
+    # subprocess.Popen(['git', 'commit', '-a', '-m', args.commit_message])
+    # subprocess.Popen(['git', 'push', '-u', 'origin', branch])
 
 
 def main():
