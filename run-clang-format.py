@@ -257,12 +257,12 @@ def get_git_branch():
     return re.sub('.*refs/heads/', '', github_ref)
 
 
-def prepare_repo_for_committing(arg):
+def prepare_repo_for_committing(args):
 
     with open(os.environ.get('GITHUB_EVENT_PATH')) as event_file:
         event_json = json.load(event_file)
     print("JSON+" + os.environ.get('GITHUB_EVENT_PATH') + str(event_json))
-    repo_fullname = event_json['reposiory']['full_name']
+    repo_fullname = event_json['repository']['full_name']
     token = os.environ.get()
     subprocess.Popen(['git', 'remote', 'add', 'origin' f'https://x-access-token:{token}@github.com/{repo_fullname}.git'])
     subprocess.Popen(['git', 'init'])
@@ -275,7 +275,7 @@ def prepare_repo_for_committing(arg):
     subprocess.Popen(['git', 'update-index', '--assume-unchanged', '.github/workflows/*'])
 
 
-def commit_to_repo(arg):
+def commit_to_repo(args):
     branch = get_git_branch()
     subprocess.Popen(['git', 'commit', '-a', '-m', args.commit_message])
     subprocess.Popen(['git', 'push', '-u', 'origin', branch])
