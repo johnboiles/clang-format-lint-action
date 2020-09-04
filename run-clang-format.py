@@ -270,7 +270,7 @@ def prepare_repo_for_committing(args):
     subprocess.Popen(['git', 'init'])
     branch = get_git_branch()
     print(f'BRANCH {branch}')
-    subprocess.Popen(['git', 'fetch', 'origin', origin])
+    subprocess.Popen(['git', 'fetch', 'origin', branch])
     subprocess.Popen(['git', 'checkout', branch])
     subprocess.Popen(['git', 'config', '--global', 'user.email', args.author_email])
     subprocess.Popen(['git', 'config', '--global', 'user.name', args.author_name])
