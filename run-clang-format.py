@@ -273,7 +273,7 @@ def prepare_repo_for_committing(args):
     subprocess.Popen(['git', 'checkout', branch])
     subprocess.Popen(['git', 'config', '--global', 'user.email', args.author_email])
     subprocess.Popen(['git', 'config', '--global', 'user.name', args.author_name])
-    subprocess.Popen(['git', 'fetch', branch])
+    subprocess.Popen(['git', 'fetch', 'origin', branch])
     subprocess.Popen(['git', 'update-index', '--assume-unchanged', '.github/workflows/*'])
 
 
